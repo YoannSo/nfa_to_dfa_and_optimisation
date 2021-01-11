@@ -54,27 +54,27 @@ def lireFichier():
 
 def AFN2AFD():
 	listEtat, listTransitions, listAFN = lireFichier()
-	print("Tous les etats:")
+	#print("Tous les etats:")
 	#printListEtat(listEtat)
-	print("Toutes les transitions:")
+	#print("Toutes les transitions:")
 	#printListTransitions(listTransitions)
 	print("AFN:")
 	printListAFN(listAFN)
 
 	listSuperEtatA = []
 	listSuperEtatB = []
-
-	for i in range (len(listAFN)): #pour tous les etats on regarde vers ou il peuvent aller et avec a
-		#print(i)
-		if(listAFN[i].depart == listEtat[0] and listAFN[i].nom == "a"): #si on est sur la bonne ligne alors on regarde vers ou ils vont
-			listSuperEtatA.append(listAFN[i].fin)
-
-		if(listAFN[i].depart == listEtat[0] and listAFN[i].nom == "b"): #si on est sur la bonne ligne alors on regarde vers ou ils vont
-			listSuperEtatB.append(listAFN[i].fin)
 	
-	print("super etats avec a en partant de l'etat 0")
+	for i in range (len(listAFN)): #pour tous les etats departs on regarde vers ou il peuvent aller
+		for j in range(len(listEtat)):
+			if(listAFN[i].depart == listEtat[j] and listAFN[i].nom == "a"): #si on est sur la bonne ligne alors on regarde vers ou ils vont
+				listSuperEtatA.append(listAFN[i].fin)
+
+			if(listAFN[i].depart == listEtat[j] and listAFN[i].nom == "b"): #si on est sur la bonne ligne alors on regarde vers ou ils vont
+				listSuperEtatB.append(listAFN[i].fin)
+	
+	print("super etats avec a")
 	printListEtat(listSuperEtatA)
-	print("super etats avec b en partant de l'etat 0")
+	print("super etats avec b")
 	printListEtat(listSuperEtatB)
 
 
