@@ -118,7 +118,7 @@ def main():
 	newC = iter(c)
 	res = [list(islice(newC, size)) for size in splitL ]
 
-	print("AFN:", res)
+	print("AFN:", res, "\n")
 
 	afn2afd(res)
 
