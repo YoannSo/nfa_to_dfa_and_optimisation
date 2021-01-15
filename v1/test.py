@@ -20,6 +20,7 @@ from pathlib import Path
 def readFile(name):
 	listEtat = []
 	listTransitions = []
+	listEtatTerminaux = []
 	listAFN = []
 	compteur = 0
 	with open(name+".txt", "r") as f:
@@ -34,6 +35,11 @@ def readFile(name):
 				for i in range(len(secondLine)):
 					listTransitions.append(secondLine[i])
 				compteur +=1
+			elif(compteur == 2):
+				thirdLine = line.split()
+				for i in range(len(thirdLine)):
+					listEtatTerminaux.append(thirdLine[i])
+				compteur +=1
 			else:
 				for x in line.split():
 					if x.isdigit():
@@ -41,7 +47,7 @@ def readFile(name):
 						listAFN.append(res)
 					else:
 						listAFN.append(x)
-	return listEtat, listTransitions, listAFN
+	return listEtat, listTransitions, listAFN, listEtatTerminaux
 
 #fonction qui permet de convertir du "text" en int si c'est un entier (enlever les guillemets)
 def convert(text):
@@ -52,7 +58,7 @@ def convert(text):
 
 #fonction qui renvoie une liste remplis de 3 de longueur listAFN renvoye de la fonction readFile, elle va nous servir pour separer la liste en sous-listes
 def customArr(fileName):
-	a,b,c = readFile(fileName)
+	a, b, c, d = readFile(fileName)
 	res = []
 	for i in range(int(len(c)/3)):
 		res.append(3)
@@ -110,9 +116,10 @@ def main():
 		else:
 			break
 
-	a,b,c = readFile(fileName)
+	a, b, c, d = readFile(fileName)
 	print("Etats:", a)
 	print("Transitions:", b)
+	print("Etat(s) Terminaux:", d)
 
 	splitL = customArr(fileName)
 	newC = iter(c)
