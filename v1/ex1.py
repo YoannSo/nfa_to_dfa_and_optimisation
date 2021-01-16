@@ -2,16 +2,6 @@
 #Auteurs: TAYLOR Matt / SOCHAJ Yoann
 #Date: 14/01/2021
 
-#AFN pour tester nos fonctions
-afn0 = 	[ [0,"a",0], [0,"a",2], [0,"b",1], [1,"b",0], [1,"b",3], [2,"a",3], [2,"b",1], [3,"a",3], [3,"b",1] ]
-listEtat0 = [0,1,2,3]
-listTransition0 = ["a","b"]
-
-
-afn1 = [ [0,"a",0],[0,"b",0],[0,"a",1],[1,"b",2] ]
-listEtat1 = [0,1,2]
-listTransition1 = ["a", "b"]
-
 #import
 from itertools import islice
 from pathlib import Path
@@ -22,7 +12,7 @@ def readFile(name):
 	listTransitions = []
 	listEtatTerminaux = []
 	listAFN = []
-	compteur = 0
+	compteur = 0 #le compteur va servir pour savoir a quelle ligne on se trouve
 	with open(name+".txt", "r") as f:
 		for line in f:
 			if(compteur == 0):
@@ -81,7 +71,7 @@ def afn2afd(afn):
 	listA=[[0]]
 	listB=[[0]]
 		
-	for i in range(len(listEtat1)):
+	for i in range(3):
 		resA=findPath(afn,listA[i],"a", 0)
 		resB=findPath(afn,listB[i],"b", 0)
 
@@ -95,7 +85,7 @@ def afn2afd(afn):
 		if(resB not in listA and resB !=[]):
 			listA.append(resB)
 
-	print("Liste des etats:", listA)
+	print("Liste des etats:", listA) #listA sera egal a listB a ce stade il suffit donc d'en afficher qu'un seul, il contient tous les etats de l'AFD
 	for i in range (len(listA)):
 		findPath(afn, listA[i], "a", 1)
 
@@ -106,7 +96,7 @@ def afn2afd(afn):
 def main():
 	while(1):
 		try:
-			fileName = (input("Enter file name: (without .txt)\n"))
+			fileName = (input("Enter file name: (without .txt)\n")) #on demande le nom du fichier a l'user
 		except ValueError:
 			print("Sorry, I didn't understand that.")
 			continue
@@ -127,6 +117,6 @@ def main():
 
 	print("AFN:", res, "\n")
 
-	afn2afd(res)
+	afn2afd(res) #on appelle notre fonction principale sur notre AFN
 
-main()
+main() #on lance le main!

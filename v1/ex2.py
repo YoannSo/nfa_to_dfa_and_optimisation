@@ -2,7 +2,6 @@
 #Auteurs: TAYLOR Matt / SOCHAJ Yoann
 #Date: 14/01/2021
 
-
 #import
 from itertools import islice
 from pathlib import Path
@@ -10,7 +9,7 @@ from pathlib import Path
 #global
 while(1):
 		try:
-			fileName = (input("Enter file name: (without .txt)\n"))
+			fileName = (input("Enter file name: (without .txt)\n")) #on demande le nom du fichier a l'user
 		except ValueError:
 			print("Sorry, I didn't understand that.")
 			continue
@@ -20,13 +19,13 @@ while(1):
 		else:
 			break
 
-#fonction pour lire le fichier texte
+#fonction pour lire le fichier texte (repris de l'exercice 1 (AFN -> AFD))
 def readFile(name):
 	listEtat = []
 	listTransitions = []
 	listEtatTerminaux = []
 	listAFN = []
-	compteur = 0
+	compteur = 0 #le compteur va servir pour savoir a quelle ligne on se trouve
 	with open(name+".txt", "r") as f:
 		for line in f:
 			if(compteur == 0):
@@ -162,6 +161,6 @@ def main():
 	print("Transitions:", b)
 	print("Etat(s) terminaux:", d)
 
-	miniAfd()
-	
-main()
+	miniAfd() #on appelle notre fonction principale sur notre AFD
+
+main() #on lance le main !
