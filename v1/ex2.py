@@ -115,26 +115,16 @@ def miniAfd():
 
 	listEtatFinal = [] #this list will contain all of the states of the minimized afd
 	i = 0
-	nuts = 0
-	# while(i < max(len(listEtatTerminaux), len(listEtatNonTerminaux))):
 	while (i<2):
 		for state in newListEtatTerminaux:
 			listDestination = destination(int(state))
-			if( (listDestination[0] in newListEtatTerminaux) and (listDestination[1] in newListEtatTerminaux) ):
-				#print("dont need to make another group with:", state)
-				nuts +=1
-			else:
-				#print("need to make another group with:", state)
+			if( not (listDestination[0] in newListEtatTerminaux) or not (listDestination[1] in newListEtatTerminaux) ): # ¬(P ^ Q) <=> ¬(P) v ¬(Q)
 				if(int(state) not in listEtatFinal):
 					listEtatFinal.append(convert(state))
 
 		for state in newListEtatNonTerminaux:
 			listDestination = destination(int(state))
-			if( (listDestination[0] in newListEtatNonTerminaux) and (listDestination[1] in newListEtatNonTerminaux) ):
-				nuts +=1
-				#print("dont need to make another group with:", state)
-			else:
-				#print("need to make another group with:", state)
+			if( not (listDestination[0] in newListEtatNonTerminaux) or not (listDestination[1] in newListEtatNonTerminaux) ):
 				if(int(state) not in listEtatFinal):
 					listEtatFinal.append(convert(state))
 
@@ -145,9 +135,11 @@ def miniAfd():
 				newListEtatNonTerminaux.remove(state)
 		i+=1
 
-	newListEtatFinal = [ [x] for x in listEtatFinal ]
-	newListEtatFinal.append(newListEtatTerminaux)
-	newListEtatFinal.append(newListEtatNonTerminaux)
+	newListEtatFinal = [ [x] for x in listEtatFinal ] #list of lists using list comprehension
+	if(newListEtatTerminaux != []): #on verifie qu'on ne rajoute pas une liste vide
+		newListEtatFinal.append(newListEtatTerminaux)
+	if(newListEtatNonTerminaux != []):
+		newListEtatFinal.append(newListEtatNonTerminaux)
 	print("Final states:", newListEtatFinal)
 
 	for i in range(len(newListEtatFinal)):
