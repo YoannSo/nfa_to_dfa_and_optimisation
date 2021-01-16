@@ -118,7 +118,7 @@ def main():
 
 	a, b, c, d = readFile(fileName)
 	print("Etats:", a)
-	print("Transitions:", b)
+	print("Alphabet:", b)
 	print("Etat(s) Terminaux:", d)
 
 	splitL = customArr(fileName)

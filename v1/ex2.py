@@ -75,12 +75,23 @@ def destination(state):
 	newC = iter(c)
 	afd = [list(islice(newC, size)) for size in splitL ]
 
-	listDestination = [] #declare an empty array which will contain all the "destination" states
+	listDestination = [] #declare an empty list which will contain all the "destination" states
 	for sublist in afd:
 		if sublist[0] == state:
 			listDestination.append(sublist[2]) #on rajoute a notre listDestination l'indice 2 de la sous-liste qui correspond a l'etat "d'arrive"
 	return listDestination #return our result
 
+#fonction pour trouver la destination d'une transition en specifiant le depart et le charactere
+def findPath(afn, list, char, printV):
+	res  = []
+	for i in range(len(afn)):
+		for state in list:	
+			if(afn[i][0] == state and afn[i][1] == char):
+				if(afn[i][2] not in res):
+					res.append(afn[i][2])
+	if(res != [] and printV):
+		print("From", list, "with", char, "->", res)
+	return res
 
 #fonction de minimisation
 def miniAfd():
@@ -103,50 +114,54 @@ def miniAfd():
 	for state in listEtatNonTerminaux:
 		newListEtatNonTerminaux.append(convert(state))
 
+	listEtatFinal = [] #this list will contain all of the states of the minimized afd
+	i = 0
+	nuts = 0
+	# while(i < max(len(listEtatTerminaux), len(listEtatNonTerminaux))):
+	while (i<2):
+		for state in newListEtatTerminaux:
+			listDestination = destination(int(state))
+			if( (listDestination[0] in newListEtatTerminaux) and (listDestination[1] in newListEtatTerminaux) ):
+				#print("dont need to make another group with:", state)
+				nuts +=1
+			else:
+				#print("need to make another group with:", state)
+				if(int(state) not in listEtatFinal):
+					listEtatFinal.append(convert(state))
 
-	for state in newListEtatTerminaux:
-		listDestination = destination(int(state))
-		if( (listDestination[0] in newListEtatTerminaux) and (listDestination[1] in newListEtatTerminaux) ):
-			print("dont need to make another group with:", state)
-		else:
-			print("need to make another group with:", state)
+		for state in newListEtatNonTerminaux:
+			listDestination = destination(int(state))
+			if( (listDestination[0] in newListEtatNonTerminaux) and (listDestination[1] in newListEtatNonTerminaux) ):
+				nuts +=1
+				#print("dont need to make another group with:", state)
+			else:
+				#print("need to make another group with:", state)
+				if(int(state) not in listEtatFinal):
+					listEtatFinal.append(convert(state))
 
-	for state in listEtatNonTerminaux:
-		listDestination = destination(int(state))
-		if( (listDestination[0] in newListEtatNonTerminaux) and (listDestination[1] in newListEtatNonTerminaux) ):
-			print("dont need to make another group with:", state)
-		else:
-			print("need to make another group with:", state)
+		for state in listEtatFinal:
+			if state in newListEtatTerminaux:
+				newListEtatTerminaux.remove(state)
+			if state in newListEtatNonTerminaux:
+				newListEtatNonTerminaux.remove(state)
+		i+=1
 
+	newListEtatFinal = [ [x] for x in listEtatFinal ]
+	newListEtatFinal.append(newListEtatTerminaux)
+	newListEtatFinal.append(newListEtatNonTerminaux)
+	print("Final states:", newListEtatFinal)
+
+	for i in range(len(newListEtatFinal)):
+		findPath(res, newListEtatFinal[i], "a", 1)
+		findPath(res, newListEtatFinal[i], "b", 1)
 
 # **** MAIN ****
 def main():
-	# while(1):
-	# 	try:
-	# 		fileName = (input("Enter file name: (without .txt)\n"))
-	# 	except ValueError:
-	# 		print("Sorry, I didn't understand that.")
-	# 		continue
-	# 	if (not Path(fileName+".txt").is_file()): #on verifie que le fichier existe
-	# 		print("File does not exist.")
-	# 		continue
-	# 	else:
-	# 		break
-
 	a, b, c, d = readFile(fileName)
 	print("Etats:", a)
 	print("Transitions:", b)
 	print("Etat(s) terminaux:", d)
 
 	miniAfd()
-	# splitL = customArr(fileName)
-	# newC = iter(c)
-	# res = [list(islice(newC, size)) for size in splitL ]
-
-	# print("AFN:", res, "\n")
-
-	# afn2afd(res)
-
-	#print(destination(2))
-
+	
 main()
