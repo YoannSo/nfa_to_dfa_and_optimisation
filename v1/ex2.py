@@ -4,6 +4,7 @@
 
 #import
 from itertools import islice
+import itertools
 from pathlib import Path
 
 #global
@@ -81,16 +82,22 @@ def destination(state):
 	return listDestination #return our result
 
 #fonction pour trouver la destination d'une transition en specifiant le depart et le charactere
-def findPath(afn, list, char, printV):
+def findPath(afd, list, char, printV):
 	res  = []
-	for i in range(len(afn)):
+	for i in range(len(afd)):
 		for state in list:	
-			if(afn[i][0] == state and afn[i][1] == char):
-				if(afn[i][2] not in res):
-					res.append(afn[i][2])
+			if(afd[i][0] == state and afd[i][1] == char):
+				if(afd[i][2] not in res):
+					res.append(afd[i][2])
 	if(res != [] and printV):
 		print("From", list, "with", char, "->", res)
 	return res
+
+def getSublist(l, state):
+	for sublist in l:
+		for i in range(len(sublist)):
+			if state in sublist:
+				return sublist
 
 #fonction de minimisation
 def miniAfd():
@@ -114,6 +121,7 @@ def miniAfd():
 		newListEtatNonTerminaux.append(convert(state))
 
 	listEtatFinal = [] #this list will contain all of the states of the minimized afd
+	
 	i = 0
 	while (i<2):
 		for state in newListEtatTerminaux:
@@ -131,6 +139,7 @@ def miniAfd():
 		for state in listEtatFinal:
 			if state in newListEtatTerminaux:
 				newListEtatTerminaux.remove(state)
+				#listEtatTerminauxMinimise.append([state])
 			if state in newListEtatNonTerminaux:
 				newListEtatNonTerminaux.remove(state)
 		i+=1
@@ -140,11 +149,21 @@ def miniAfd():
 		newListEtatFinal.append(newListEtatTerminaux)
 	if(newListEtatNonTerminaux != []):
 		newListEtatFinal.append(newListEtatNonTerminaux)
-	print("Final states:", newListEtatFinal)
+
+	newListEtatTerminaux = []
+	for state in listEtatTerminaux:
+		newListEtatTerminaux.append(convert(state))
+
+	listEtatTerminauxMinimise = [ getSublist(newListEtatFinal,x) for x in newListEtatTerminaux ]
+	listEtatTerminauxMinimise.sort()
+	listEtatTerminauxMinimise = list(listEtatTerminauxMinimise for listEtatTerminauxMinimise, _ in itertools.groupby(listEtatTerminauxMinimise)) #remove duplicates from list
+	
+	print("Etats de l'AFD minimise:", newListEtatFinal)
+	print("Etats terminaux de l'AFD minimise", listEtatTerminauxMinimise)
 
 	for i in range(len(newListEtatFinal)):
-		findPath(res, newListEtatFinal[i], "a", 1)
-		findPath(res, newListEtatFinal[i], "b", 1)
+		resA = findPath(res, newListEtatFinal[i], "a", 1)
+		resB = findPath(res, newListEtatFinal[i], "b", 1)
 
 # **** MAIN ****
 def main():

@@ -4,7 +4,21 @@
 
 #import
 from itertools import islice
+import itertools
 from pathlib import Path
+
+#global
+while(1):
+		try:
+			fileName = (input("Enter file name: (without .txt)\n")) #on demande le nom du fichier a l'user
+		except ValueError:
+			print("Sorry, I didn't understand that.")
+			continue
+		if (not Path(fileName+".txt").is_file()): #on verifie que le fichier existe
+			print("File does not exist.")
+			continue
+		else:
+			break
 
 #fonction pour lire le fichier texte
 def readFile(name):
@@ -66,8 +80,15 @@ def findPath(afn, list, char, printV):
 		print("From", list, "with", char, "->", res)
 	return res
 
+def getSublist(l, state):
+	for sublist in l:
+		for i in range(len(sublist)):
+			if state in sublist:
+				return sublist
+
 #fonction principale qui regroupe le tout
 def afn2afd(afn):
+	a, b, c, listEtatTerminaux = readFile(fileName)
 	listA=[[0]]
 	listB=[[0]]
 		
@@ -85,7 +106,17 @@ def afn2afd(afn):
 		if(resB not in listA and resB !=[]):
 			listA.append(resB)
 
-	print("Liste des etats:", listA) #listA sera egal a listB a ce stade il suffit donc d'en afficher qu'un seul, il contient tous les etats de l'AFD
+	print("Etats de l'AFD:", listA) #listA sera egal a listB a ce stade il suffit donc d'en afficher qu'un seul, il contient tous les etats de l'AFD
+
+	newListEtatTerminaux = [] #on cree une nouvelle liste en remplacant les strings d'entiers par des "vrais" entiers
+	for state in listEtatTerminaux:
+		newListEtatTerminaux.append(convert(state))
+
+	listEtatTerminauxAFD = [ getSublist(listA,x) for x in newListEtatTerminaux ] #on regarde si un etat terminal est dans un des etats nouvellement cree de l'AFD
+	listEtatTerminauxAFD.sort() 
+	listEtatTerminauxAFD = list(listEtatTerminauxAFD for listEtatTerminauxAFD, _ in itertools.groupby(listEtatTerminauxAFD)) #remove duplicates from list
+
+	print("Etat(s) terminaux de l'AFD", listEtatTerminauxAFD)
 	for i in range (len(listA)):
 		findPath(afn, listA[i], "a", 1)
 
@@ -94,18 +125,6 @@ def afn2afd(afn):
 	
 # **** MAIN ****
 def main():
-	while(1):
-		try:
-			fileName = (input("Enter file name: (without .txt)\n")) #on demande le nom du fichier a l'user
-		except ValueError:
-			print("Sorry, I didn't understand that.")
-			continue
-		if (not Path(fileName+".txt").is_file()): #on verifie que le fichier existe
-			print("File does not exist.")
-			continue
-		else:
-			break
-
 	a, b, c, d = readFile(fileName)
 	print("Etats:", a)
 	print("Alphabet:", b)
