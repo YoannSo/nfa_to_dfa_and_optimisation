@@ -82,13 +82,17 @@ def destination(state):
 	return listDestination #return our result
 
 #fonction pour trouver la destination d'une transition en specifiant le depart et le charactere
-def findPath(afd, list, char, printV):
+def findPath(afd, list, char, printV, newListEtatFinal):
 	res  = []
-	for i in range(len(afd)):
-		for state in list:	
+	for state in list:
+		for i in range(len(afd)):
 			if(afd[i][0] == state and afd[i][1] == char):
-				if(afd[i][2] not in res):
+				if(afd[i][2] not in res and len(getSublist(newListEtatFinal, afd[i][2])) < 2):
 					res.append(afd[i][2])
+				else:
+					ans = getSublist(newListEtatFinal, afd[i][2])
+					if(ans not in res and ans[0] not in res):
+						res.append(ans)			
 	if(res != [] and printV):
 		print("From", list, "with", char, "->", res)
 	return res
@@ -162,8 +166,8 @@ def miniAfd():
 	print("Etats terminaux de l'AFD minimise", listEtatTerminauxMinimise)
 
 	for i in range(len(newListEtatFinal)):
-		resA = findPath(res, newListEtatFinal[i], "a", 1)
-		resB = findPath(res, newListEtatFinal[i], "b", 1)
+		resA = findPath(res, newListEtatFinal[i], "a", 1, newListEtatFinal)
+		resB = findPath(res, newListEtatFinal[i], "b", 1, newListEtatFinal)
 
 # **** MAIN ****
 def main():
