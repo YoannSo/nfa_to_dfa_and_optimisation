@@ -30,21 +30,21 @@ def readFile(name):
 	with open(name+".txt", "r") as f:
 		for line in f:
 			if(compteur == 0):
-				firstLine = line.split()
+				firstLine = line.split() #la premiere ligne correspond a la liste des etats
 				for i in range(len(firstLine)):
 					listEtat.append(firstLine[i])
 				compteur +=1
 			elif(compteur == 1):
-				secondLine = line.split()
+				secondLine = line.split() #la deuxieme ligne correspond a l'alphabet
 				for i in range(len(secondLine)):
 					listTransitions.append(secondLine[i])
 				compteur +=1
 			elif(compteur == 2):
-				thirdLine = line.split()
+				thirdLine = line.split() #la troisieme ligne correspond a la liste des etats terminaux
 				for i in range(len(thirdLine)):
 					listEtatTerminaux.append(thirdLine[i])
 				compteur +=1
-			else:
+			else: #le reste concerne l'AFD
 				for x in line.split():
 					if x.isdigit():
 						res = convert(x)
@@ -68,7 +68,7 @@ def customArr(fileName):
 		res.append(3)
 	return res
 
-#fonction qui prend en parametre un etat et retourne le(s) etat(s) vers lequels il "va" avec "a" et "b" (toute la grammaire)
+#fonction qui prend en parametre un etat et retourne le(s) etat(s) vers lequels il "va" avec "a" et "b" (toute l'alphabet)
 def destination(state):
 	a, b, c, d = readFile(fileName)
 	splitL = customArr(fileName)
@@ -81,22 +81,23 @@ def destination(state):
 			listDestination.append(sublist[2]) #on rajoute a notre listDestination l'indice 2 de la sous-liste qui correspond a l'etat "d'arrive"
 	return listDestination #return our result
 
-#fonction pour trouver la destination d'une transition en specifiant le depart et le charactere
+#fonction pour trouver la destination d'une transition en specifiant le depart et le charactere (modifie de l'ex1.py)
 def findPath(afd, list, char, printV, newListEtatFinal):
 	res  = []
 	for state in list:
 		for i in range(len(afd)):
 			if(afd[i][0] == state and afd[i][1] == char):
-				if(afd[i][2] not in res and len(getSublist(newListEtatFinal, afd[i][2])) < 2):
+				if(afd[i][2] not in res and len(getSublist(newListEtatFinal, afd[i][2])) < 2): #oblige de rajouter cette condition par rapport a l'ex 1 car sinon il va renvoyer vers un etat qui peut ne plus exister
 					res.append(afd[i][2])
 				else:
-					ans = getSublist(newListEtatFinal, afd[i][2])
+					ans = getSublist(newListEtatFinal, afd[i][2]) #on utilise getSublist() pour obtenir la sous liste contenant le resultat pour l'append a res
 					if(ans not in res and ans[0] not in res):
 						res.append(ans)			
 	if(res != [] and printV):
-		print("From", list, "with", char, "->", res)
+		print("From", list, "with", char, "->", res) #on affiche les informations pour etre lu facilement par l'user
 	return res
 
+#fonction qui renvoie la sublist d'une list si elle contient une valeur passe en parametre
 def getSublist(l, state):
 	for sublist in l:
 		for i in range(len(sublist)):
@@ -105,22 +106,22 @@ def getSublist(l, state):
 
 #fonction de minimisation
 def miniAfd():
-	a, b, c, listEtatTerminaux = readFile(fileName)
+	a, b, c, listEtatTerminaux = readFile(fileName) #on utilise notre fonction definie au dessus pour lire notre fichier et avoir nos variables
 	listEtatNonTerminaux = [x for x in a if x not in listEtatTerminaux] #list comprehension pour creer une liste d'etats non terminaux
 	print("Etat(s) non terminaux:", listEtatNonTerminaux)
 
-	splitL = customArr(fileName)
+	splitL = customArr(fileName) #ces lignes permettent de remettre c en une liste de sous-listes
 	newC = iter(c)
 	res = [list(islice(newC, size)) for size in splitL ]
 
-	print("AFD:", res, "\n")
+	print("AFD:", res, "\n") #on affiche l'AFD lu du fichier en forme de liste
 
 	#convert the states in the lists to ints not strings
-	newListEtatTerminaux = []
+	newListEtatTerminaux = [] #ce passage est obligatoire pour convertir les entiers dans les listes en "vrai" entier et non pas des strings
 	for state in listEtatTerminaux:
 		newListEtatTerminaux.append(convert(state))
 
-	newListEtatNonTerminaux = []
+	newListEtatNonTerminaux = [] #de meme pour les etats non terminaux
 	for state in listEtatNonTerminaux:
 		newListEtatNonTerminaux.append(convert(state))
 
@@ -128,13 +129,13 @@ def miniAfd():
 	
 	i = 0
 	while (i<2):
-		for state in newListEtatTerminaux:
-			listDestination = destination(int(state))
-			if( not (listDestination[0] in newListEtatTerminaux) or not (listDestination[1] in newListEtatTerminaux) ): # ¬(P ^ Q) <=> ¬(P) v ¬(Q)
-				if(int(state) not in listEtatFinal):
-					listEtatFinal.append(convert(state))
+		for state in newListEtatTerminaux: #on itere sur chaque etat newListEtatTerminaux 
+			listDestination = destination(int(state)) #en utilisant la fonction destination() definie au dessus
+			if( not (listDestination[0] in newListEtatTerminaux) or not (listDestination[1] in newListEtatTerminaux) ): # ¬(P ^ Q) <=> ¬(P) v ¬(Q) de Morgan
+				if(int(state) not in listEtatFinal): #si il n'est pas deja dans la liste
+					listEtatFinal.append(convert(state)) #on l'ajoute
 
-		for state in newListEtatNonTerminaux:
+		for state in newListEtatNonTerminaux: #de meme pour newListEtatNonTerminaux
 			listDestination = destination(int(state))
 			if( not (listDestination[0] in newListEtatNonTerminaux) or not (listDestination[1] in newListEtatNonTerminaux) ):
 				if(int(state) not in listEtatFinal):
@@ -143,7 +144,6 @@ def miniAfd():
 		for state in listEtatFinal:
 			if state in newListEtatTerminaux:
 				newListEtatTerminaux.remove(state)
-				#listEtatTerminauxMinimise.append([state])
 			if state in newListEtatNonTerminaux:
 				newListEtatNonTerminaux.remove(state)
 		i+=1
@@ -161,7 +161,8 @@ def miniAfd():
 	listEtatTerminauxMinimise = [ getSublist(newListEtatFinal,x) for x in newListEtatTerminaux ]
 	listEtatTerminauxMinimise.sort()
 	listEtatTerminauxMinimise = list(listEtatTerminauxMinimise for listEtatTerminauxMinimise, _ in itertools.groupby(listEtatTerminauxMinimise)) #remove duplicates from list
-	
+
+	print("******* RESULTAT *******\n")
 	print("Etats de l'AFD minimise:", newListEtatFinal)
 	print("Etats terminaux de l'AFD minimise", listEtatTerminauxMinimise)
 
@@ -172,9 +173,9 @@ def miniAfd():
 # **** MAIN ****
 def main():
 	a, b, c, d = readFile(fileName)
-	print("Etats:", a)
-	print("Transitions:", b)
-	print("Etat(s) terminaux:", d)
+	print("Etats:", a) #correspond a tous les etats (ligne 1 du fichier)
+	print("Transitions:", b) #correspond l'alphabet (ligne 2 du fichier)
+	print("Etat(s) terminaux:", d) #correspond a tous les etats terminaux (ligne 3 du fichier)
 
 	miniAfd() #on appelle notre fonction principale sur notre AFD
 
